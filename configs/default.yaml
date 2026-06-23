@@ -1,0 +1,19 @@
+download:
+  timeout_seconds: 30
+  retries: 4
+  rate_limit_seconds: 0.25
+  backoff_seconds: 2.0
+  max_backoff_seconds: 60.0
+  user_agent: "scribe-tech-test-pipeline/0.1"
+
+gbif:
+  enabled: true
+  base_url: "https://api.gbif.org/v1"
+  timeout_seconds: 25
+  retries: 3
+  rate_limit_seconds: 0.2
+  min_confidence: 80
+  cache_path: "cache/gbif_species_match.json"
+
+report:
+  max_records: 750
