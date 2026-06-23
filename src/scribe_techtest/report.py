@@ -20,6 +20,16 @@ def field_coverage(df: pd.DataFrame) -> pd.DataFrame:
         source_col = f"source_{field}"
         json_count = int(df[source_col].eq("json").sum()) if source_col in df.columns else 0
         gbif_count = int(df[source_col].eq("gbif").sum()) if source_col in df.columns else 0
+        geo_count = (
+            int(
+                df[source_col]
+                .astype(str)
+                .str.startswith(("geo_", "unsd_"))
+                .sum()
+            )
+            if source_col in df.columns
+            else 0
+        )
         rows.append(
             {
                 "field": field,
@@ -32,6 +42,7 @@ def field_coverage(df: pd.DataFrame) -> pd.DataFrame:
                 "total_new_data": len(new),
                 "source_json": json_count,
                 "source_gbif": gbif_count,
+                "source_geo": geo_count,
                 "blank_all": total - filled,
             }
         )
@@ -69,6 +80,7 @@ def render_gallery_report(
         f"<td>{int(row.filled_new_data)} / {int(row.total_new_data)}</td>"
         f"<td>{int(row.source_json)}</td>"
         f"<td>{int(row.source_gbif)}</td>"
+        f"<td>{int(row.source_geo)}</td>"
         f"<td>{int(row.blank_all)}</td>"
         "</tr>"
         for row in coverage.itertuples(index=False)
@@ -140,7 +152,7 @@ def render_gallery_report(
   <div class="topbox">
     <h2>Field Coverage Summary</h2>
     <div class="tablewrap"><table>
-      <thead><tr><th>Field</th><th>All</th><th>main_data</th><th>new_data</th><th>JSON source</th><th>GBIF source</th><th>Blank</th></tr></thead>
+      <thead><tr><th>Field</th><th>All</th><th>main_data</th><th>new_data</th><th>JSON source</th><th>GBIF source</th><th>Geo/UNSD source</th><th>Blank</th></tr></thead>
       <tbody>{summary_rows}</tbody>
     </table></div>
   </div>
@@ -249,8 +261,9 @@ def render_field_row(row: pd.Series, field: str) -> str:
     source = clean(row.get(f"source_{field}", ""))
     if not value:
         return f'<tr class="blankrow"><th>{esc(field)}</th><td><span class="blank">blank</span></td></tr>'
-    css = "gbifrow" if source == "gbif" else "jsonrow"
-    text_css = "gbif" if source == "gbif" else "ok"
+    blue_sources = {"gbif", "unsd_m49"}
+    css = "gbifrow" if source in blue_sources else "jsonrow"
+    text_css = "gbif" if source in blue_sources else "ok"
     label = f"{esc(value)} <span class=\"small\">({esc(source or 'provided')})</span>"
     return f'<tr class="{css}"><th>{esc(field)}</th><td><span class="{text_css}">{label}</span></td></tr>'
 
