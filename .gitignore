@@ -1,0 +1,12 @@
+
+# Local runtime outputs
+outputs/
+logs/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local downloaded/cache data
+downloads/
+cache/

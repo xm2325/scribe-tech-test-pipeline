@@ -188,8 +188,10 @@ def render_record(row: pd.Series, report_path: Path) -> str:
     nonblank = sum(1 for field in TARGET_FIELDS if not is_blank(row.get(field, "")))
     blank_fields = [field for field in TARGET_FIELDS if is_blank(row.get(field, ""))]
     image_src = clean(row.get("local_image_rel", "")) or clean(row.get("jpegURL", ""))
-    json_href = clean(row.get("local_json_rel", "")) or clean(row.get("jsonURL", ""))
-    jpeg_href = clean(row.get("local_image_rel", "")) or clean(row.get("jpegURL", ""))
+
+    # User-facing links should point to the original URLs from the workbook.
+    json_href = clean(row.get("jsonURL", "")) or clean(row.get("local_json_rel", ""))
+    jpeg_href = clean(row.get("jpegURL", "")) or clean(row.get("local_image_rel", ""))
     search = " ".join(
         clean(row.get(field, ""))
         for field in [
@@ -229,6 +231,17 @@ def render_record(row: pd.Series, report_path: Path) -> str:
       </div>
     </section>
     """
+
+
+def local_debug_links(local_jpeg_href: str, local_json_href: str) -> str:
+    links = []
+    if local_jpeg_href:
+        links.append(f'<a href="{esc(local_jpeg_href)}" target="_blank" rel="noopener">local JPEG cache</a>')
+    if local_json_href:
+        links.append(f'<a href="{esc(local_json_href)}" target="_blank" rel="noopener">local JSON cache</a>')
+    if not links:
+        return ""
+    return '<br><span class="small">Cache: ' + " · ".join(links) + "</span>"
 
 
 def render_field_row(row: pd.Series, field: str) -> str:

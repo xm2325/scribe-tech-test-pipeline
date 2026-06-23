@@ -10,7 +10,15 @@ from .utils import clean
 
 
 def extract_fields_from_file(path: str | Path) -> tuple[dict[str, str], dict[str, str]]:
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    path = Path(path)
+    raw = path.read_bytes()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        # Some Zenodo JSON files contain legacy Latin-1 bytes, e.g. collector names
+        # with accented characters. Latin-1 preserves byte values instead of dropping data.
+        text = raw.decode("latin-1")
+    data = json.loads(text)
     return extract_fields_from_json(data)
 
 
