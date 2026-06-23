@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import os
 from pathlib import Path
 from typing import Any
 
@@ -199,7 +200,14 @@ def render_record(row: pd.Series, report_path: Path) -> str:
     sheet = clean(row.get("source_sheet", ""))
     nonblank = sum(1 for field in TARGET_FIELDS if not is_blank(row.get(field, "")))
     blank_fields = [field for field in TARGET_FIELDS if is_blank(row.get(field, ""))]
-    image_src = clean(row.get("local_image_rel", "")) or clean(row.get("jpegURL", ""))
+    # Display image should prefer the local downloaded cache.
+    # Recompute the relative path from the actual HTML report location so that
+    # reports/*.html can reliably find ../downloads/images/*.jpg.
+    local_image_path = clean(row.get("local_image_path", ""))
+    if local_image_path and Path(local_image_path).exists():
+        image_src = os.path.relpath(local_image_path, start=report_path.parent).replace(os.sep, "/")
+    else:
+        image_src = clean(row.get("local_image_rel", "")) or clean(row.get("jpegURL", ""))
 
     # User-facing links should point to the original URLs from the workbook.
     json_href = clean(row.get("jsonURL", "")) or clean(row.get("local_json_rel", ""))

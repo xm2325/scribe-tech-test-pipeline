@@ -12,6 +12,7 @@ import yaml
 from .constants import TARGET_FIELDS
 from .download import DownloadConfig, download_all
 from .gbif import GbifConfig, enrich_taxonomy
+from .geo import enrich_geography
 from .json_extract import extract_fields_from_file
 from .report import field_coverage, render_gallery_report
 from .utils import clean, is_blank
@@ -66,6 +67,14 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
     write_download_summary(records, manifest, output_dir, skip_images=args.skip_images)
 
     json_filled = build_json_filled(records, manifest, output_dir)
+    json_filled = enrich_geography(
+        json_filled,
+        mapping_path=config.get("geo", {}).get(
+            "country_continent_path",
+            "configs/country_continent_from_unsd_m49.csv",
+        ),
+        output_dir=output_dir,
+    )
     processed_dir = output_dir / "processed"
     write_tables(json_filled, processed_dir, "json_filled_750")
     write_tables(json_filled[json_filled["source_sheet"].eq("new_data")], processed_dir, "json_filled_new_data")
