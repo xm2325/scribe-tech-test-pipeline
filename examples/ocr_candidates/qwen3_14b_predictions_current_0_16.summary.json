@@ -1,0 +1,27 @@
+{
+  "chunks_used": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "records": 750,
+  "pass_records": 748,
+  "fail_records": 2,
+  "prediction_rows": 5659,
+  "out_tsv": "/net/scratch/f70829xm/qwen3_14b_ocr_to_37column_jsonfilled750_v1/03_outputs/merged_current_0_16/qwen3_14b_predictions_current_0_16.tsv",
+  "out_record_status_jsonl": "/net/scratch/f70829xm/qwen3_14b_ocr_to_37column_jsonfilled750_v1/03_outputs/merged_current_0_16/qwen3_14b_predictions_current_0_16.record_status.jsonl"
+}

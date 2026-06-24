@@ -1,12 +1,40 @@
 
-# Local runtime outputs
-outputs/
-logs/
-.venv/
-__pycache__/
-*.pyc
-.DS_Store
-
-# Local downloaded/cache data
-downloads/
+assets_*/
+*.bak
 cache/
+crops/
+# CSF3 / Slurm / vLLM logs
+downloads/
+.DS_Store
+*.err
+extras/csf3_vision_ocr/**/01_raw_yoloe/
+extras/csf3_vision_ocr/**/02_boxlogic/
+extras/csf3_vision_ocr/**/*.before_*
+extras/csf3_vision_ocr/**/crops/
+extras/csf3_vision_ocr/**/*.jobid
+extras/csf3_vision_ocr/**/logs/
+extras/csf3_vision_ocr/**/markers/
+extras/csf3_vision_ocr/**/overlays/
+extras/csf3_vision_ocr/**/*.pyc
+extras/csf3_vision_ocr/**/*selfcontained*.html
+extras/csf3_vision_ocr/**/*visual_gallery*.html
+# Full CSF3 vision/OCR intermediate outputs should not be committed.
+*.jobid
+# Large image/crop/model artifacts
+# Local downloaded/cache data
+# Local outputs and downloaded assets
+# Local runtime outputs
+*.log
+logs/
+model_cache/
+models/
+*.out
+outputs/
+overlays/
+*.part
+*.pyc
+__pycache__/
+# Python
+raw/
+.venv/
+vllm_cache/
