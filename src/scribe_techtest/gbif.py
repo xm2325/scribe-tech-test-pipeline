@@ -133,6 +133,20 @@ def apply_match(
     df.at[idx, "gbif_status"] = clean(match.get("status", ""))
     df.at[idx, "gbif_rank"] = clean(match.get("rank", ""))
 
+    # Strict taxonomy-write gate:
+    # keep GBIF metadata for audit, but only write taxonomy fields when the match is
+    # exact, taxonomically usable, and not a kingdom-level placeholder.
+    match_type = clean(match.get("matchType", "")).upper()
+    status = clean(match.get("status", "")).upper()
+    rank = clean(match.get("rank", "")).upper()
+
+    if match_type != "EXACT":
+        return
+    if status not in {"ACCEPTED", "SYNONYM"}:
+        return
+    if rank in {"KINGDOM"}:
+        return
+
     try:
         confidence = float(match.get("confidence", 0) or 0)
     except (TypeError, ValueError):
